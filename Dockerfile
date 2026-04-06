@@ -1,24 +1,30 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-WORKDIR /app
+WORKDIR /var/www/html
 
+# Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev zip \
     default-mysql-client \
     libonig-dev \
     libxml2-dev \
     libsqlite3-dev \
-    && docker-php-ext-install zip pdo pdo_mysql mysqli
+    && docker-php-ext-install pdo pdo_mysql mysqli zip
 
-RUN curl -sS https://getcomposer.org/installer | php
+# Habilitar mod_rewrite de Apache
+RUN a2enmod rewrite
 
+# Copiar proyecto
 COPY . .
 
-RUN php composer.phar install --no-dev --optimize-autoloader
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php \
+    && php composer.phar install --no-dev --optimize-autoloader
 
-# Verificación
-RUN php -m | grep -E "pdo|mysql"
+# Permisos
+RUN chown -R www-data:www-data /var/www/html
 
-EXPOSE 8080
+# Puerto
+EXPOSE 80
 
-CMD php artisan serve --host=0.0.0.0 --port=8080
+CMD ["apache2-foreground"]
