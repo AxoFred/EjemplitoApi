@@ -1,8 +1,8 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-WORKDIR /var/www/html
+WORKDIR /app
 
-# Instalar dependencias necesarias
+# Dependencias
 RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev zip \
     default-mysql-client \
@@ -11,21 +11,17 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     && docker-php-ext-install pdo pdo_mysql mysqli zip
 
-# Habilitar mod_rewrite de Apache
-RUN a2enmod rewrite \
-    && a2dismod mpm_event \
-    && a2enmod mpm_prefork
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php
 
 # Copiar proyecto
 COPY . .
 
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php \
-    && php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs
-# Permisos
-RUN chown -R www-data:www-data /var/www/html
+# Instalar Laravel
+RUN php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Puerto
-EXPOSE 80
+# Puerto Railway
+EXPOSE 8080
 
-CMD ["apache2-foreground"]
+# Servidor Laravel
+CMD php artisan serve --host=0.0.0.0 --port=8080
