@@ -2,10 +2,12 @@ FROM php:8.4-cli
 
 WORKDIR /app
 
+ARG CACHE_BUST=1
 # Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
     git unzip curl libzip-dev zip \
-    && docker-php-ext-install zip pdo pdo_mysql
+    && docker-php-ext-install zip pdo pdo_mysql \
+    && echo "build mysql enabled"
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php
