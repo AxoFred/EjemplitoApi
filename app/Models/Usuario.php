@@ -9,6 +9,7 @@ class Usuario extends Model
     //hacemos  referencia a la tabla usuarios
     protected $table = 'usuarios';
   //hacer que los campos sean editables
+  public $timestamps = false;
     protected $fillable = [
         'nombre',
         'apaterno',
