@@ -1,4 +1,4 @@
-FROM php:8.4-cli
+FROM php:8.2-cli
 
 WORKDIR /app
 
@@ -8,20 +8,16 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libsqlite3-dev \
-    && docker-php-ext-install zip pdo pdo_mysql mysqli \
-    && docker-php-ext-enable pdo_mysql mysqli
+    && docker-php-ext-install zip pdo pdo_mysql mysqli
 
-# Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php
 
-# Copiar proyecto
 COPY . .
 
-# Instalar Laravel
 RUN php composer.phar install --no-dev --optimize-autoloader
 
-# 🔥 Verificación real
-RUN php -m | sort
+# Verificación
+RUN php -m | grep -E "pdo|mysql"
 
 EXPOSE 8080
 
