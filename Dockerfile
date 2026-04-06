@@ -19,8 +19,7 @@ COPY . .
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php \
-    && php composer.phar install --no-dev --optimize-autoloader
-
+    && php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs
 # Permisos
 RUN chown -R www-data:www-data /var/www/html
 
